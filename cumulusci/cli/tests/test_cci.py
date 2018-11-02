@@ -17,6 +17,7 @@ import cumulusci
 from cumulusci.core.config import OrgConfig
 from cumulusci.core.config import TaskConfig, FlowConfig
 from cumulusci.core.tasks import BaseTask
+from cumulusci.core.exceptions import ConfigError
 from cumulusci.core.exceptions import FlowNotFoundError
 from cumulusci.core.exceptions import OrgNotFound
 from cumulusci.core.exceptions import ScratchOrgException
@@ -573,6 +574,22 @@ test2                                     dev          test2@example.com""",
         config.project_config.orgs__scratch = {"bogus": {}}
 
         with self.assertRaises(click.UsageError):
+            run_click_command(
+                cci.org_scratch,
+                config=config,
+                config_name="dev",
+                org_name="test",
+                default=True,
+                devhub="hub",
+                days=7,
+                no_password=True,
+            )
+
+    def test_org_scratch_config_disabled(self):
+        config = mock.Mock()
+        config.project_config.orgs__scratch = {"dev": {"orgName": "Dev", "config_file": "None"}}
+
+        with self.assertRaises(ConfigError):
             run_click_command(
                 cci.org_scratch,
                 config=config,

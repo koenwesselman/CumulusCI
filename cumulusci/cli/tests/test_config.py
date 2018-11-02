@@ -108,6 +108,27 @@ class TestCliConfig(unittest.TestCase):
         config.keychain.create_scratch_org.assert_called_once()
 
     @mock.patch("click.confirm")
+    def test_check_org_disabled_config(self, confirm):
+        config = CliConfig()
+        config.keychain = mock.Mock()
+        config.project_config = mock.Mock()
+        config.project_config.orgs__scratch = {"dev": {"orgName": "Dev", "config_file": "None"}}
+
+        org_config = OrgConfig(
+            {
+                "scratch": True,
+                "date_created": date.today() - timedelta(days=2),
+                "expired": True,
+                "config_name": "dev"
+            },
+            "test",
+        )
+        confirm.return_value = True
+
+        with self.assertRaises(ConfigError):
+            config.check_org_expired("test", org_config)
+
+    @mock.patch("click.confirm")
     def test_check_org_expired_decline(self, confirm):
         config = CliConfig()
         config.keychain = mock.Mock()
@@ -117,7 +138,7 @@ class TestCliConfig(unittest.TestCase):
                 "date_created": date.today() - timedelta(days=2),
                 "expired": True,
             },
-            "test",
+            "test"
         )
         confirm.return_value = False
 

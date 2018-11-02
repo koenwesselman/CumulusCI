@@ -75,3 +75,20 @@ class TestDictMerger(unittest.TestCase):
     def test_cant_merge_nonsense(self):
         with self.assertRaises(ConfigMergeError):
             combo = utils.dictmerge(pytz, 2)
+
+
+class TestIsScratchOrgDisabled(unittest.TestCase):
+    def test_enabled_scratch_org_config(self):
+        scratch_config = {"orgName": "Dev", "config_file": "orgs/dev.json"}
+        self.assertFalse(utils.is_scratch_config_disabled(scratch_config))
+
+    def test_disabled_scratch_org_config(self):
+        scratch_config = {"orgName": "Dev", "config_file": "None"}
+        self.assertTrue(utils.is_scratch_config_disabled(scratch_config))
+
+    def test_none_scratch_org_config(self):
+        self.assertFalse(utils.is_scratch_config_disabled(None))
+
+    def test_no_config_file_scratch_org_config(self):
+        scratch_config = {"orgName": "Dev"}
+        self.assertFalse(utils.is_scratch_config_disabled(scratch_config))
