@@ -45,6 +45,7 @@ from cumulusci.core.exceptions import ServiceNotConfigured
 from cumulusci.core.exceptions import TaskNotFoundError
 from cumulusci.core.flows import BaseFlow
 from cumulusci.core.utils import import_class
+from cumulusci.core.utils import is_scratch_config_disabled
 from cumulusci.cli.config import CliConfig
 from cumulusci.cli.config import get_installed_version
 from cumulusci.utils import doc_task
@@ -846,15 +847,24 @@ def org_scratch(config, config_name, org_name, default, devhub, days, no_passwor
     config.check_org_overwrite(org_name)
 
     scratch_configs = getattr(config.project_config, "orgs__scratch")
+
     if not scratch_configs:
         raise click.UsageError("No scratch org configs found in cumulusci.yml")
+
     scratch_config = scratch_configs.get(config_name)
+
     if not scratch_config:
         raise click.UsageError(
             "No scratch org config named {} found in the cumulusci.yml file".format(
                 config_name
             )
         )
+
+    if is_scratch_config_disabled(scratch_config):
+        raise click.ConfigError(
+            "The scratch org config named {} was disabled in the cumulusci.yml file".format(
+                config_name
+        ))
 
     if devhub:
         scratch_config["devhub"] = devhub

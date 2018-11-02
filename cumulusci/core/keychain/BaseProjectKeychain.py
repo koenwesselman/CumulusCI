@@ -7,6 +7,8 @@ from cumulusci.core.exceptions import OrgNotFound
 from cumulusci.core.exceptions import ServiceNotConfigured
 from cumulusci.core.exceptions import ServiceNotValid
 
+from cumulusci.core.utils import is_scratch_config_disabled
+
 
 class BaseProjectKeychain(BaseConfig):
     encrypted = False
@@ -76,21 +78,23 @@ class BaseProjectKeychain(BaseConfig):
         scratch_config = getattr(
             self.project_config, "orgs__scratch__{}".format(config_name)
         )
-        if days is not None:
-            # Allow override of scratch config's default days
-            scratch_config["days"] = days
-        else:
-            # Use scratch config days or default of 1 day
-            scratch_config.setdefault("days", 1)
-        scratch_config["set_password"] = bool(set_password)
-        scratch_config["scratch"] = True
-        scratch_config.setdefault("namespaced", False)
-        scratch_config["config_name"] = config_name
-        scratch_config["sfdx_alias"] = "{}__{}".format(
-            self.project_config.project__name, org_name
-        )
-        org_config = ScratchOrgConfig(scratch_config, org_name)
-        self.set_org(org_config)
+
+        if not is_scratch_config_disabled(scratch_config):
+            if days is not None:
+                # Allow override of scratch config's default days
+                scratch_config["days"] = days
+            else:
+                # Use scratch config days or default of 1 day
+                scratch_config.setdefault("days", 1)
+            scratch_config["set_password"] = bool(set_password)
+            scratch_config["scratch"] = True
+            scratch_config.setdefault("namespaced", False)
+            scratch_config["config_name"] = config_name
+            scratch_config["sfdx_alias"] = "{}__{}".format(
+                self.project_config.project__name, org_name
+            )
+            org_config = ScratchOrgConfig(scratch_config, org_name)
+            self.set_org(org_config)
 
     def change_key(self, key):
         """ re-encrypt stored services and orgs with the new key """

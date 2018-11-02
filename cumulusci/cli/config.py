@@ -14,6 +14,7 @@ from cumulusci.core.exceptions import KeychainKeyNotFound
 from cumulusci.core.exceptions import ProjectConfigNotFound
 
 from cumulusci.core.utils import import_class
+from cumulusci.core.utils import is_scratch_config_disabled
 
 
 class CliConfig(object):
@@ -100,6 +101,12 @@ class CliConfig(object):
         if org_config.scratch and org_config.date_created and org_config.expired:
             click.echo(click.style("The scratch org is expired", fg="yellow"))
             if click.confirm("Attempt to recreate the scratch org?", default=True):
+                scratch_config = getattr(self.project_config, "orgs__scratch").get(org_config.config_name)
+                if is_scratch_config_disabled(scratch_config):
+                    raise ConfigError("The scratch org config named {} was disabled in the cumulusci.yml file".format(
+                        org_config.config_name
+                    ))
+
                 self.keychain.create_scratch_org(
                     org_name, org_config.config_name, org_config.days
                 )

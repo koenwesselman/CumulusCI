@@ -151,3 +151,13 @@ def dictmerge(a, b, name=None):
             config_name=name,
         )
     return a
+
+
+def is_scratch_config_disabled(scratch_config):
+    """ Check whether a Scratch Config is disabled"""
+    ret = False
+    if scratch_config is not None:
+        if "config_file" in scratch_config:
+            if scratch_config["config_file"] == 'None':
+                ret = True
+    return ret
