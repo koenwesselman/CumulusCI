@@ -103,6 +103,15 @@ You can define your own scratch org configs in your project's `cumulusci.yml` fi
 
 In the example above, we've defined a new scratch org config named `test_env1` which points to a scratch org definition file located at `orgs/test_env1.json` in the project repository.  We've also overridden the default expiration days from 1 to 3 and specified that we want this org to have the project's namespace applied.
 
+You can disable any of the default scratch org configs (dev, feature, beta, release) in your project's `cumulusci.yml` file:
+
+.. code-block:: yaml
+
+    orgs:
+        scratch:
+            dev:
+                config_file: None
+
 Auto-Created Scratch Org
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
