@@ -125,7 +125,7 @@ class TestCliConfig(unittest.TestCase):
         )
         confirm.return_value = True
 
-        with self.assertRaises(ConfigError):
+        with self.assertRaises(click.UsageError):
             config.check_org_expired("test", org_config)
 
     @mock.patch("click.confirm")

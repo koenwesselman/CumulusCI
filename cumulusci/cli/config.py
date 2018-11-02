@@ -103,7 +103,7 @@ class CliConfig(object):
             if click.confirm("Attempt to recreate the scratch org?", default=True):
                 scratch_config = getattr(self.project_config, "orgs__scratch").get(org_config.config_name)
                 if is_scratch_config_disabled(scratch_config):
-                    raise ConfigError("The scratch org config named {} was disabled in the cumulusci.yml file".format(
+                    raise click.UsageError("The scratch org config named {} was disabled in the cumulusci.yml file".format(
                         org_config.config_name
                     ))
 

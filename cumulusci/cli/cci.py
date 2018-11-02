@@ -861,7 +861,7 @@ def org_scratch(config, config_name, org_name, default, devhub, days, no_passwor
         )
 
     if is_scratch_config_disabled(scratch_config):
-        raise ConfigError(
+        raise click.UsageError(
             "The scratch org config named {} was disabled in the cumulusci.yml file".format(
                 config_name
         ))

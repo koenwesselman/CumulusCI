@@ -589,7 +589,7 @@ test2                                     dev          test2@example.com""",
         config = mock.Mock()
         config.project_config.orgs__scratch = {"dev": {"orgName": "Dev", "config_file": "None"}}
 
-        with self.assertRaises(ConfigError):
+        with self.assertRaises(click.UsageError):
             run_click_command(
                 cci.org_scratch,
                 config=config,
